@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MENU GIAN HÀNG KTPM A2-K51</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-orange: #ffaa00;
+            --bg-dark: #080b12;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #b0c4de;
+            font-family: 'Share Tech Mono', monospace;
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            padding-bottom: 120px;
+        }
+
+        .heading-font { font-family: 'Orbitron', sans-serif; }
+
+        .terminal-panel {
+            background: rgba(13, 17, 23, 0.9);
+            border: 1px solid var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .item-card {
+            border-bottom: 1px solid rgba(0, 243, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .item-card:hover {
+            background: rgba(0, 243, 255, 0.08);
+            border-left: 4px solid var(--neon-orange);
+        }
+
+        .thumb-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 1px solid var(--neon-blue);
+            clip-path: polygon(15% 0, 100% 0, 100% 85%, 85% 100%, 0 100%, 0 15%);
+        }
+
+        .price-tag {
+            color: var(--neon-orange);
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--neon-orange);
+        }
+
+        .section-label {
+            background: var(--neon-blue);
+            color: black;
+            padding: 4px 15px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            clip-path: polygon(0 0, 90% 0, 100% 100%, 0 100%);
+        }
+
+        .btn-add {
+            border: 1px solid var(--neon-blue);
+            padding: 6px 16px;
+            font-size: 12px;
+            color: var(--neon-blue);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .btn-add:hover {
+            background: var(--neon-blue);
+            color: black;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .cart-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(8, 11, 18, 0.98);
+            border-top: 2px solid var(--neon-blue);
+            padding: 15px;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal.active { display: flex; }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        .scanner {
+            position: absolute;
+            width: 100%; height: 2px;
+            background: rgba(255, 170, 0, 0.4);
+            animation: scanline 5s linear infinite;
+            z-index: 5;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-12">
+
+    <header class="max-w-6xl mx-auto mb-12 text-center relative">
+        <div class="inline-block p-4 border-2 border-dashed border-[#00f3ff]/30 mb-4">
+            <h1 class="heading-font text-3xl md:text-5xl font-bold text-white tracking-widest uppercase">
+                KỸ THUẬT <span class="text-[#00f3ff]">PHẦN MỀM</span> A2
+            </h1>
+        </div>
+        <div class="flex justify-center gap-6 text-[10px] tracking-[2px] opacity-70">
+            <span>Đại học Cần Thơ</span>
+            <span class="text-green-500 font-bold">KHÓA 51</span>
+            <span id="status-light" class="animate-pulse text-green-400">● HỆ THỐNG TRỰC TUYẾN</span>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <!-- MODULE 01: FOOD -->
+        <div class="terminal-panel rounded-lg">
+            <div class="scanner"></div>
+            <div class="p-4 border-b border-[#00f3ff] flex justify-between items-center bg-[#00f3ff]/5">
+                <span class="section-label heading-font">01_FOOD_STATION</span>
+            </div>
+            <div class="p-4 space-y-4" id="food-container">
+                <!-- JS render -->
+            </div>
+        </div>
+
+        <!-- MODULE 02: DRINKS -->
+        <div class="terminal-panel rounded-lg border-[#ffaa00]">
+            <div class="p-4 border-b border-[#ffaa00] flex justify-between items-center bg-[#ffaa00]/5">
+                <span class="section-label heading-font !bg-[#ffaa00]">02_LIQUID_DRIVE</span>
+            </div>
+            <div class="p-4 space-y-4" id="drink-container">
+                <!-- JS render -->
+            </div>
+        </div>
+    </main>
+
+    <div class="cart-bar">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div onclick="openOrderModal()" class="cursor-pointer">
+                <p class="text-[10px] text-gray-500 uppercase">Giỏ hàng: <span id="cart-count" class="text-white">0</span> món</p>
+                <p class="price-tag text-xl" id="cart-total">0K</p>
+            </div>
+            <button onclick="openOrderModal()" class="btn-add py-3 px-8">XEM ĐƠN HÀNG</button>
+        </div>
+    </div>
+
+    <div id="order-modal" class="modal">
+        <div class="terminal-panel w-full max-w-lg p-6 bg-[#0d1117] border-2">
+            <h2 class="heading-font text-[#00f3ff] mb-4 text-xl">XÁC NHẬN ĐƠN HÀNG</h2>
+            <div id="cart-details" class="space-y-3 mb-6 max-h-48 overflow-y-auto pr-2"></div>
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="text-[10px] text-gray-500 uppercase block mb-1">Tên khách / Số bàn</label>
+                    <input id="customer-info" type="text" placeholder="Ví dụ: Bàn 5 - Anh Nam" 
+                        class="w-full bg-black/40 border border-gray-700 p-2 text-white outline-none focus:border-[#00f3ff]">
+                </div>
+                <div>
+                    <label class="text-[10px] text-gray-500 uppercase block mb-1">Ghi chú</label>
+                    <textarea id="order-note" placeholder="Ví dụ: Ít cay, nhiều đá..." 
+                        class="w-full bg-black/40 border border-gray-700 p-2 text-white outline-none focus:border-[#00f3ff] h-16"></textarea>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeOrderModal()" class="flex-1 py-3 border border-gray-600 text-gray-500 uppercase text-xs">Quay lại</button>
+                <button id="submit-btn" onclick="sendOrder()" class="flex-1 py-3 bg-[#00f3ff] text-black font-bold uppercase text-xs">GỬI ĐƠN HÀNG</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Cấu hình an toàn
+        let db, auth;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ktpm-a2-order';
+
+        try {
+            const firebaseConfig = JSON.parse(__firebase_config);
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            signInAnonymously(auth);
+        } catch (e) {
+            console.warn("Firebase config not found, running in offline mode.");
+        }
+
+        const menu = [
+            { id: 1, name: "Bánh tráng trộn", price: 20, type: "food", img: "https://i1-giadinh.vnecdn.net/2023/08/05/anhdaidien-1691221857-9943-1691221866.jpg?w=0&h=0&q=100&dpr=2&fit=crop&s=KZRGjdJmptImeOcmcXpQbw" },
+            { id: 2, name: "Bánh tráng cuộn", price: 20, type: "food", img: "https://banhtrangdom.com/wp-content/uploads/2023/02/combo-1-500-500-px-3.png" },
+            { id: 3, name: "Snack trộn", price: 15, type: "food", img: "https://i.ytimg.com/vi/b6R8LL-rASM/maxresdefault.jpg" },
+            { id: 4, name: "Trái cây chấm muối", price: 20, type: "food", img: "https://dienmayhtech.com/_next/image?url=https%3A%2F%2Fimage.dienmayhtech.com%2FStaticFiles%2FImages%2F2025%2F03%2F31%2Fcach-lam-muoi-cham-xoai_f3b5.png&w=1920&q=75" },
+            { id: 5, name: "Nước Sâm", price: 10, type: "drink", img: "http://media.cooky.vn/images/blog-2016/bidao.jpg" },
+            { id: 6, name: "SODA", price: 10, type: "drink", img: "https://www.bartender.edu.vn/wp-content/uploads/2020/11/soda-y.jpg" },
+            { id: 7, name: "PEPSI", price: 10, type: "drink", img: "https://traicayhoabien.com/wp-content/uploads/2025/02/nuoc-ngot-pepsi-lon-nhat-ban-3.jpg" },
+            { id: 8, name: "7UP", price: 10, type: "drink", img: "https://product.hstatic.net/200000534989/product/dsc08322-enhanced-nr_1_a0e949f164bb47c8bd7165bbce252af1_master.jpg" },
+            { id: 9, name: "COCA COLA", price: 10, type: "drink", img: "https://cdn.tgdd.vn/Files/2017/11/14/1041443/moi-ngay-uong-1-lon-coca-cola-co-sao-khong-nen-uong-bao-nhieu-la-tot-202112300854488863.jpg" }
+        ];
+
+        let cart = [];
+
+        window.renderUI = () => {
+            const foodCont = document.getElementById('food-container');
+            const drinkCont = document.getElementById('drink-container');
+            
+            if(!foodCont || !drinkCont) return;
+
+            foodCont.innerHTML = "";
+            drinkCont.innerHTML = "";
+
+            menu.forEach(item => {
+                const card = `
+                    <div class="item-card p-3 flex gap-4 items-center">
+                        <img src="${item.img}" alt="${item.name}" class="thumb-img" onerror="this.src='https://placehold.co/80x80/080b12/00f3ff?text=IMAGE'">
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-white text-sm font-bold uppercase">${item.name}</h3>
+                                <span class="price-tag">${item.price}K</span>
+                            </div>
+                            <button onclick="addToCart(${item.id})" class="btn-add mt-2">THÊM +</button>
+                        </div>
+                    </div>
+                `;
+                if(item.type === 'food') foodCont.innerHTML += card;
+                else drinkCont.innerHTML += card;
+            });
+        };
+
+        window.addToCart = (id) => {
+            const item = menu.find(m => m.id === id);
+            const exists = cart.find(c => c.id === id);
+            if(exists) exists.qty++;
+            else cart.push({...item, qty: 1});
+            updateCartUI();
+        };
+
+        window.updateCartUI = () => {
+            const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            const count = cart.reduce((sum, i) => sum + i.qty, 0);
+            document.getElementById('cart-total').innerText = total + 'K';
+            document.getElementById('cart-count').innerText = count;
+
+            const details = document.getElementById('cart-details');
+            details.innerHTML = cart.length === 0 ? '<p class="text-gray-600 italic text-center">Giỏ hàng đang trống...</p>' : '';
+            cart.forEach(i => {
+                details.innerHTML += `
+                    <div class="flex justify-between items-center text-sm border-b border-gray-800 pb-2">
+                        <span>${i.name} x${i.qty}</span>
+                        <span class="text-[#ffaa00]">${i.price * i.qty}K</span>
+                    </div>
+                `;
+            });
+        };
+
+        window.openOrderModal = () => document.getElementById('order-modal').classList.add('active');
+        window.closeOrderModal = () => document.getElementById('order-modal').classList.remove('active');
+
+        window.sendOrder = async () => {
+            const customer = document.getElementById('customer-info').value.trim();
+            const note = document.getElementById('order-note').value.trim();
+            const btn = document.getElementById('submit-btn');
+
+            if(!customer) return alert("Vui lòng nhập Tên hoặc Số bàn!");
+            if(cart.length === 0) return alert("Giỏ hàng đang trống!");
+
+            if(!db) return alert("Lỗi hệ thống: Chưa kết nối máy chủ.");
+
+            btn.innerText = "ĐANG GỬI...";
+            btn.disabled = true;
+
+            try {
+                const ordersCol = collection(db, 'artifacts', appId, 'public', 'data', 'orders');
+                await addDoc(ordersCol, {
+                    customer: customer,
+                    note: note,
+                    items: cart.map(i => ({name: i.name, qty: i.qty, price: i.price})),
+                    total: cart.reduce((sum, i) => sum + (i.price * i.qty), 0),
+                    status: 'đang xử lý',
+                    timestamp: serverTimestamp()
+                });
+
+                alert("ĐÃ GỬI ĐƠN! Vui lòng đợi nhân viên phục vụ.");
+                cart = [];
+                updateCartUI();
+                closeOrderModal();
+                document.getElementById('customer-info').value = "";
+                document.getElementById('order-note').value = "";
+            } catch (e) {
+                alert("Lỗi: " + e.message);
+            } finally {
+                btn.innerText = "GỬI ĐƠN HÀNG";
+                btn.disabled = false;
+            }
+        };
+
+        // Khởi chạy ngay sau khi load script
+        window.renderUI();
+    </script>
+</body>
+</html>
